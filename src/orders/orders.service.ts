@@ -1,17 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CartsService } from '../carts/carts.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { Order } from '../../generated/prisma';
 
 @Injectable()
 export class OrdersService {
-  constructor(
-    private cartsService: CartsService,
-    private prisma: PrismaService,
-  ) {}
+  constructor(private cartsService: CartsService) {}
 
   async getOrders(userId: number): Promise<Order[]> {
-    return this.prisma.order.findMany({
+    return this.cartsService.prisma.order.findMany({
       where: {
         userId: userId,
       },
@@ -37,7 +33,7 @@ export class OrdersService {
       0,
     );
 
-    const order = await this.prisma.order.create({
+    const order = await this.cartsService.prisma.order.create({
       data: {
         userId,
         total,
@@ -54,7 +50,7 @@ export class OrdersService {
     });
 
     // Очищаем корзину
-    await this.prisma.cartItem.deleteMany({
+    await this.cartsService.prisma.cartItem.deleteMany({
       where: { cartId: cart.id },
     });
 
