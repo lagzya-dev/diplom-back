@@ -24,7 +24,6 @@ import { User } from '../../generated/prisma';
 
 @ApiTags('Cart')
 @ApiBearerAuth()
-
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartService: CartsService) {}
@@ -34,7 +33,7 @@ export class CartsController {
   @ApiOperation({ summary: 'Get current user cart' })
   @ApiResponse({ status: 200, description: 'Cart retrieved successfully' })
   getCart(@Req() req: Request) {
-    return this.cartService.getOrCreateCart((req["user"] as User).id);
+    return this.cartService.getOrCreateCart((req['user'] as User).id);
   }
 
   @Post('add')
@@ -43,9 +42,9 @@ export class CartsController {
   @ApiBody({ type: AddToCartDto })
   @ApiResponse({ status: 200, description: 'Item added to cart' })
   addToCart(@Req() req: Request, @Body() dto: AddToCartDto) {
-    console.log(dto)
+    console.log(dto);
     return this.cartService.addToCart(
-      (req["user"] as User).id,
+      (req['user'] as User).id,
       dto.productId,
       dto.quantity,
     );
@@ -58,7 +57,7 @@ export class CartsController {
   @ApiResponse({ status: 200, description: 'Item quantity updated' })
   updateCart(@Req() req: Request, @Body() dto: UpdateCartDto) {
     return this.cartService.updateCart(
-      (req["user"] as User).id,
+      (req['user'] as User).id,
       dto.productId,
       dto.quantity,
     );
@@ -69,8 +68,12 @@ export class CartsController {
   @ApiParam({ name: 'productId', type: Number })
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: 200, description: 'Item removed from cart' })
-  removeFromCart(@Req() req: Request, @Param('productId') productId: number) {
-    return this.cartService.removeFromCart((req["user"] as User).id, productId);
+  removeFromCart(@Req() req: Request, @Param('productId') productId: string) {
+    console.log(productId);
+    return this.cartService.removeFromCart(
+      (req['user'] as User).id,
+      +productId,
+    );
   }
 
   @Post('clear')
@@ -78,6 +81,6 @@ export class CartsController {
   @ApiOperation({ summary: 'Clear all items in cart' })
   @ApiResponse({ status: 200, description: 'Cart cleared' })
   clearCart(@Req() req: Request) {
-    return this.cartService.clearCart((req["user"] as User).id);
+    return this.cartService.clearCart((req['user'] as User).id);
   }
 }

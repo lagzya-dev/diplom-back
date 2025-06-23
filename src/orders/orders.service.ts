@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CartsService } from '../carts/carts.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Order } from '../../generated/prisma';
 
 @Injectable()
 export class OrdersService {
@@ -9,6 +10,20 @@ export class OrdersService {
     private cartsService: CartsService,
   ) {}
 
+  async getOrders(userId: number): Promise<Order[]> {
+    return this.prisma.order.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+  }
   async createOrder(userId: number, address: string, phone: string) {
     const cart = await this.cartsService.getOrCreateCart(userId);
     const items = cart.items;

@@ -72,7 +72,7 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<AuthResponseDto> {
     try {
       const payload = this.jwtService.verify(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        secret: this.configService.get<string>('JWT_SECRET'),
       });
 
       const user = await this.prisma.user.findUnique({
@@ -111,7 +111,7 @@ export class AuthService {
     const refreshToken = this.jwtService.sign(
       { sub: user.id },
       {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        secret: this.configService.get<string>('JWT_SECRET'),
         expiresIn:
           this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '7d',
       },

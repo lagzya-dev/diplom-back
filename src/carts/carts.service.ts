@@ -17,19 +17,21 @@ export class CartsService {
   async addToCart(userId: number, productId: number, quantity: number) {
     const cart = await this.getOrCreateCart(userId);
 
-    return this.prisma.cartItem.upsert({
+    await this.prisma.cartItem.upsert({
       where: { cartId_productId: { cartId: cart.id, productId: productId } },
-      create: { cartId: cart.id, productId: productId, quantity:quantity },
+      create: { cartId: cart.id, productId: productId, quantity: quantity },
       update: { quantity: { increment: quantity } },
     });
+
+    return this.getOrCreateCart(userId);
   }
 
   async removeFromCart(userId: number, productId: number) {
     const cart = await this.getOrCreateCart(userId);
-
-    return this.prisma.cartItem.delete({
+    await this.prisma.cartItem.delete({
       where: { cartId_productId: { cartId: cart.id, productId } },
     });
+    return this.getOrCreateCart(userId);
   }
 
   async clearCart(userId: number) {

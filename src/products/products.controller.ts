@@ -25,12 +25,16 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/enums/role.enum';
 import { ProductResponseDto } from './dto/product-response.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @ApiTags('Products')
 @ApiBearerAuth()
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)

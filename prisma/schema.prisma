@@ -1,16 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
-}
-
-generator erd {
-  provider = "prisma-erd-generator"
 }
 
 datasource db {
@@ -28,7 +18,7 @@ model User {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  carts     Cart[]
+  carts     Cart?
   orders    Order[]
 
   @@map("users")
@@ -48,12 +38,12 @@ model Product {
   description String?
   price       Float
   imageUrl    String?
-  vendor      Vendor      @relation(fields: [vendorId], references: [id])
   vendorId    Int
-  category    Category?   @relation(fields: [categoryId], references: [id])
   categoryId  Int?
   carts       CartItem[]
   orders      OrderItem[]
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  vendor      Vendor      @relation(fields: [vendorId], references: [id])
 }
 
 model Category {
@@ -64,19 +54,19 @@ model Category {
 
 model Cart {
   id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
   userId    Int        @unique
-  items     CartItem[]
   createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
 }
 
 model CartItem {
   id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
   cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
   @@index([cartId, productId])
@@ -84,24 +74,24 @@ model CartItem {
 
 model Order {
   id        Int         @id @default(autoincrement())
-  user      User        @relation(fields: [userId], references: [id])
   userId    Int
-  items     OrderItem[]
   total     Float
   status    OrderStatus @default(PENDING)
   address   String
   phone     String
   createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
 }
 
 model OrderItem {
   id        Int     @id @default(autoincrement())
-  order     Order   @relation(fields: [orderId], references: [id])
   orderId   Int
-  product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
   price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 enum OrderStatus {
