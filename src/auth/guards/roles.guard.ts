@@ -28,9 +28,8 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       throw new ForbiddenException('User information not found');
     }
-
     const hasRequiredRole = requiredRoles.some((role) =>
-      user.roles?.includes(role),
+      user.roles?.includes(role.toUpperCase()),
     );
 
     if (!hasRequiredRole) {

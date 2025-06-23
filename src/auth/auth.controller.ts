@@ -56,8 +56,11 @@ export class AuthController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Invalid credentials or inactive account',
   })
-  async login(@Req() req: Request): Promise<AuthResponseDto> {
-    return this.authService.login(req['user'] as User);
+  async login(
+    @Req() req: Request,
+    @Body() loginDto: LoginDto,
+  ): Promise<AuthResponseDto> {
+    return this.authService.login(loginDto);
   }
 
   @Post('refresh')

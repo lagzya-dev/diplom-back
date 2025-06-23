@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { $Enums, User } from '../../generated/prisma';
 import Role = $Enums.Role;
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -55,10 +56,16 @@ export class AuthService {
     return passwordValid ? user : null;
   }
 
-  async login(user: User): Promise<AuthResponseDto> {
-    if (!user.isActive) {
-      throw new UnauthorizedException('Account is deactivated');
+  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: loginDto.email,
+      },
+    });
+    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
+      throw new UnauthorizedException('Invalid credentials');
     }
+
     return this.generateTokens(user);
   }
 

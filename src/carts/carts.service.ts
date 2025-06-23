@@ -18,8 +18,8 @@ export class CartsService {
     const cart = await this.getOrCreateCart(userId);
 
     return this.prisma.cartItem.upsert({
-      where: { cartId_productId: { cartId: cart.id, productId } },
-      create: { cartId: cart.id, productId, quantity },
+      where: { cartId_productId: { cartId: cart.id, productId: productId } },
+      create: { cartId: cart.id, productId: productId, quantity:quantity },
       update: { quantity: { increment: quantity } },
     });
   }
@@ -30,5 +30,41 @@ export class CartsService {
     return this.prisma.cartItem.delete({
       where: { cartId_productId: { cartId: cart.id, productId } },
     });
+  }
+
+  async clearCart(userId: number) {
+    await this.prisma.cart.delete({
+      where: {
+        userId: userId,
+      },
+    });
+    return this.getOrCreateCart(userId);
+  }
+
+  async updateCart(userId: number, productId: number, quantity: number) {
+    const getUserCart = await this.getOrCreateCart(userId);
+    await this.prisma.cart.update({
+      where: {
+        userId,
+      },
+      data: {
+        items: {
+          update: {
+            where: {
+              cartId_productId: {
+                cartId: getUserCart.id,
+                productId: productId,
+              },
+            },
+            data: {
+              quantity: {
+                increment: quantity,
+              },
+            },
+          },
+        },
+      },
+    });
+    return this.getOrCreateCart(userId);
   }
 }
