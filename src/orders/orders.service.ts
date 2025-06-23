@@ -6,8 +6,8 @@ import { Order } from '../../generated/prisma';
 @Injectable()
 export class OrdersService {
   constructor(
-    private prisma: PrismaService,
     private cartsService: CartsService,
+    private prisma: PrismaService,
   ) {}
 
   async getOrders(userId: number): Promise<Order[]> {
