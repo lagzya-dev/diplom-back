@@ -12,10 +12,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Request } from 'express';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { User } from '../../generated/prisma';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -43,7 +43,6 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
@@ -58,7 +57,7 @@ export class AuthController {
     description: 'Invalid credentials or inactive account',
   })
   async login(@Req() req: Request): Promise<AuthResponseDto> {
-    return this.authService.login(req['user']);
+    return this.authService.login(req['user'] as User);
   }
 
   @Post('refresh')

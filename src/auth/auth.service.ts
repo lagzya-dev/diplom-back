@@ -10,8 +10,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { Role } from '../users/enums/role.enum';
-import { User } from '../../generated/prisma';
+import { $Enums, User } from '../../generated/prisma';
+import Role = $Enums.Role;
 
 @Injectable()
 export class AuthService {

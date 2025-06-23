@@ -6,7 +6,8 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
-import { Role } from '../../users/enums/role.enum';
+import { $Enums } from '../../../generated/prisma';
+import Role = $Enums.Role;
 
 export class RegisterDto {
   @ApiProperty({ example: 'user@example.com', description: 'Email address' })
